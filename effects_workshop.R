@@ -1,7 +1,8 @@
 # Effect Displays
 # Clay Ford
-# UVa StatLab 
-# Fall 2016
+# UVA StatLab 
+# Presented Fall 2016 
+# Updated October 2022
 
 # packages used in this workshop
 install.packages("effects")
@@ -19,7 +20,8 @@ install.packages("stargazer")
 # Logistic regression example 
 
 # Data from a study of the personality determinants of volunteering for
-# psychological research. This data come with the effects package.
+# psychological research. This data come with the carData package, which is
+# loaded when the effects package is loaded.
 library(effects)
 str(Cowles)
 ?Cowles
@@ -30,8 +32,9 @@ data(Cowles)
 # scale measures from the Eysenck personality inventory.)
 
 
-# Fit a logistic model
-cowles.mod <- glm(volunteer ~ sex + neuroticism + extraversion + neuroticism:extraversion, 
+# Fit a logistic regression model
+cowles.mod <- glm(volunteer ~ sex + neuroticism + extraversion + 
+                    neuroticism:extraversion, 
                   data=Cowles, family=binomial)
 summary(cowles.mod)
 
@@ -63,9 +66,10 @@ mean(Cowles$extraversion)
 mean(Cowles$neuroticism) * mean(Cowles$extraversion)
 
 # another longer way to get the predictions for sex
-predict(cowles.mod, newdata = data.frame(sex = factor(c("female","male")),
-                                         neuroticism = mean(Cowles$neuroticism),
-                                         extraversion = mean(Cowles$extraversion)),
+predict(cowles.mod, 
+        newdata = data.frame(sex = factor(c("female","male")),
+                             neuroticism = mean(Cowles$neuroticism),
+                             extraversion = mean(Cowles$extraversion)),
         type = "response")
 
 # neuroticism*extraversion effect
@@ -88,13 +92,14 @@ prop.table(table(Cowles$sex))
 # gestation - length of gestation in days
 # age - mother's age
 # ht - mother's height in inches
-# wt1 - mother prepregnancy wt in pounds
+# wt1 - mother pre-pregnancy wt in pounds
 # smoke - does mother smoke? (0=never, 1=smokes now, 2=until current pregnancy, 3=once did, not now)
 
-babies <- read.csv("http://people.virginia.edu/~jcf2d/workshops/effects/babies.csv")
+babies <- read.csv("https://github.com/clayford/effects_pkg/raw/master/babies.csv")
 # set smoke as a factor
 babies$smoke <- factor(babies$smoke,
-                       labels =  c("never","still smokes", "until pregnant","once did"))
+                       labels =  c("never","still smokes",
+                                   "until pregnant","once did"))
 
 # Model baby birth weight as a function of gestation, age, gestation:age
 # interaction and smoke.
@@ -170,7 +175,7 @@ plot(Effect(focal.predictors = c("neuroticism","extraversion", "sex"), cowles.mo
 
 # YOUR TURN!
 
-# 1) plot just the gestation:age interaction from the babie.mod object using 10 
+# 1) plot just the gestation:age interaction from the babies.mod object using 10 
 # values for age, 6 values for gestation, and assuming the mother still smokes.
 
 # Tip: to calculate effects assuming mother still smokes, set the given.values 
@@ -222,7 +227,7 @@ plot(Effect(focal.predictors = c("neuroticism","extraversion","sex"),
 # changing line colors and line types
 
 plot(e.out3, multiline = TRUE, colors = "black")
-# what happend? 
+# what happened? 
 # Default: lines = 1:length(colors)
 # If only one color defined, then we only get one line type!
 
@@ -275,11 +280,6 @@ plot(e.out3, band.colors = "blue", band.transparency=.3)
 plot(e.out3, band.colors = "blue", band.transparency=0) # disappears
 plot(e.out3, band.colors = "blue", band.transparency=1) # covers up line
 
-
-# changing color of the strips to monochrome
-.save.strip <- setStrip() 
-plot(e.out3)
-restoreStrip(.save.strip) # restore
 
 # changing tick marks on vertical axis
 
@@ -410,7 +410,7 @@ coefplot(cowles.mod, sort = "magnitude")
 # sort alphabetical (from bottom)
 coefplot(cowles.mod, sort = "alphabetical")
 
-# supress the intercept
+# suppress the intercept
 coefplot(cowles.mod, intercept = FALSE)
 
 # view specific predictors

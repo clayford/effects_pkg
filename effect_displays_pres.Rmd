@@ -55,7 +55,18 @@ What to make of this output? How to interpret the interaction?
 
 ## An effect display of the interaction
 
-![alt text](lm_effects1.jpeg)
+```{r echo=FALSE, message=FALSE}
+library(effects)
+cowles.mod <- glm(volunteer ~ sex + neuroticism*extraversion, 
+                  data=Cowles, family=binomial)
+```
+
+
+```{r echo=FALSE}
+plot(Effect(focal.predictors = c("neuroticism", "extraversion"), 
+            mod = cowles.mod, xlevels = list(extraversion = c(5, 10, 15, 20))))
+```
+
 
 ## Interpretation
 
@@ -141,7 +152,7 @@ Say we have a model called `model` with an interaction `x1*x2`. There are two wa
 
 ## Effect example
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 library(effects)
 ```
 
@@ -153,6 +164,7 @@ Effect(focal.predictors = c("neuroticism","extraversion"),
 ```
 
 ## Effect example with plot
+
 ```{r}
 plot(Effect(focal.predictors = c("neuroticism","extraversion"), 
        mod = cowles.mod))
@@ -175,6 +187,7 @@ Example of a named list:
 `xlevels=list(neuroticism=seq(0,24,2), extraversion=3)`
 
 ## `xlevels` example
+
 ```{r fig.height=5}
 plot(Effect(focal.predictors = c("neuroticism","extraversion"), 
        mod = cowles.mod,
@@ -279,9 +292,11 @@ We can also change the x-axis and y-axis labels using the usual `xlab` and `ylab
 
 ## Example of `x.var` argument
 
+
 ```{r fig.height=5.5}
 plot(e.out, x.var = "extraversion", 
-     ylab = "Prob of Volunteering")
+     ylab = "Prob of Volunteering", 
+     lines = list(splines = FALSE)) # to suppress warnings
 ```
 
 
@@ -358,29 +373,9 @@ To change band color, use the `band.colors` argument. For example, `band.colors 
 To change band transparency, use the `band.transparency` argument. For example, `band.transparency = 0.25`
 
 ## Example modifying CI bands
+
 ```{r}
 plot(e.out, band.colors = "red", band.transparency = 0.25)
-```
-
-
-## Changing the color of the strips in the plot
-
-The `setStrip` and `restoreStrip` functions modify the strips that appear in the plots.   
-\ 
-
-The default call `setStrip()` provides monochrome (rather than the default colored) strips with up to 3 gray-scale values corresponding to 3 conditioning variables.   
-\ 
-
-`restoreStrip` is used to reset the strips to previously saved parameters returned by `setStrip`.   
-\ 
-
-## Example of modifying strips
-```{r fig.height=4.7}
-.save.strip <- setStrip() # change to monochrome
-plot(Effect(focal.predictors = 
-              c("neuroticism","extraversion", "sex"), 
-            cowles.mod))
-restoreStrip(.save.strip) # restore previous settings
 ```
 
 
@@ -397,6 +392,7 @@ The `ticks` argument requires a two-item list (`at` and `n`; if `at` is used, `n
 Let's look at two examples.
 
 ## Example of `ticks` argument
+
 ```{r fig.height=5}
 plot(e.out, ticks = 
        list(at=c(.1,.25,.5,.75)))
